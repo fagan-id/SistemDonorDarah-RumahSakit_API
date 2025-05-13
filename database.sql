@@ -67,6 +67,7 @@ CREATE TABLE bloodUnit (
     id_unit SERIAL PRIMARY KEY,
     id_donor INTEGER NOT NULL,
     volume FLOAT NOT NULL,
+    bloodType VARCHAR(2) NOT NULL CHECK (bloodType IN ('O', 'A', 'B', 'AB')),
     rhesus VARCHAR(1) NOT NULL CHECK (rhesus IN ('+', '-')),
     status SMALLINT NOT NULL DEFAULT 1 CHECK (status IN (1, 2)), -- 1 = in-stock, 2=out
     donorDate TIMESTAMP NOT NULL,
@@ -76,13 +77,13 @@ CREATE TABLE bloodUnit (
 
 -- Dumping data for table `bloodUnit`
 INSERT INTO bloodUnit 
-(id_donor, volume, rhesus, status, donorDate, expiryDate)
+(id_donor, volume, bloodType,rhesus, status, donorDate, expiryDate)
 VALUES
-(1, 450.0, '+', 1, '2023-12-01 10:00:00', '2024-06-01 10:00:00'),
-(2, 500.0, '-', 1, '2023-11-15 14:30:00', '2024-05-15 14:30:00'),
-(3, 400.0, '+', 2, '2023-10-10 09:00:00', '2024-04-10 09:00:00'),
-(4, 450.0, '-', 1, '2023-09-05 11:00:00', '2024-03-05 11:00:00'),
-(5, 500.0, '+', 1, '2023-08-20 08:30:00', '2024-02-20 08:30:00');
+(1, 450.0,'A','+', 1, '2023-12-01 10:00:00', '2024-06-01 10:00:00'),
+(2, 500.0,'B','-', 1, '2023-11-15 14:30:00', '2024-05-15 14:30:00'),
+(3, 400.0,'O','+', 2, '2023-10-10 09:00:00', '2024-04-10 09:00:00'),
+(4, 450.0,'AB','-', 1, '2023-09-05 11:00:00', '2024-03-05 11:00:00'),
+(5, 500.0,'A','+', 1, '2023-08-20 08:30:00', '2024-02-20 08:30:00');
 
 -- --------------------------------------------------------
 -- Table structure for table `hospital`
