@@ -57,45 +57,48 @@ router.get("/type", async (req, res) => {
 });
 
 // get all blood unit (single donor)
-router.get('/',async(req,res) => {
-    try {
-        const {rows} = await conn.query('SELECT * FROM BLOODUNIT');
-        res.status(200).json({
-            message : "Succesfully Fetched all blood unit data!",
-            data : rows
-        })
-    } catch (error) {
-        res.status(400).message({
-            message: "Failed to get all blood unit data!",
-            error: error,
-          });
-    }
+router.get("/", async (req, res) => {
+  try {
+    const { rows } = await conn.query("SELECT * FROM BLOODUNIT");
+    res.status(200).json({
+      message: "Succesfully Fetched all blood unit data!",
+      data: rows,
+    });
+  } catch (error) {
+    res.status(400).message({
+      message: "Failed to get all blood unit data!",
+      error: error,
+    });
+  }
 });
 
 // get blood unit by id(single donor)
-router.get('/:id',async(req,res) => {
-    const {id} = req.params
-    try {
-        const {rows} = await conn.query('SELECT * FROM BLOODUNIT WHERE id_unit = $1',[id]);
-        res.status(200).json({
-            message : "Succesfully Fetched a blood unit data!",
-            data : rows[0]
-        })
-    } catch (error) {
-        res.status(400).message({
-            message: "Failed to get a blood unit data!",
-            error: error,
-          });
-    }
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await conn.query(
+      "SELECT * FROM BLOODUNIT WHERE id_unit = $1",
+      [id]
+    );
+    res.status(200).json({
+      message: "Succesfully Fetched a blood unit data!",
+      data: rows[0],
+    });
+  } catch (error) {
+    res.status(400).message({
+      message: "Failed to get a blood unit data!",
+      error: error,
+    });
+  }
 });
 
 // post new blood unit (membuat blood unit baru)
 router.post("/", async (req, res) => {
-  const { id_donor, volume, bloodtype, rhesus, status, donordate, expirydate } =
-    req.body;
+  const { id_donor, volume, bloodtype, rhesus, status, expirydate } = req.body;
+  const donordate = new Date().toISOString();
   try {
     const insertQuery = `INSERT INTO BLOODUNIT(id_donor, volume, bloodtype, rhesus, status, donordate, expirydate) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7);`;
+            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`;
     const { rows } = await conn.query(insertQuery, [
       id_donor,
       volume,
@@ -121,8 +124,8 @@ router.post("/", async (req, res) => {
 // update blood unit
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { id_donor, volume, bloodtype, rhesus, status, donordate, expirydate } =
-    req.body;
+  const { id_donor, volume, bloodtype, rhesus, status, expirydate } = req.body;
+  const donordate = new Date().toISOString();
 
   try {
     const updateQuery = `UPDATE BLOODUNIT
@@ -133,7 +136,8 @@ router.put("/:id", async (req, res) => {
                 status = $5,
                 donordate = $6,
                 expirydate = $7
-            WHERE id_unit = $8;`;
+            WHERE id_unit = $8
+                RETURNING *;`;
 
     const { rows } = await conn.query(updateQuery, [
       id_donor,

@@ -30,8 +30,7 @@ router.get('/search/:params', (req,res) => {
 
 // post new donors
 router.post('/', async (req, res) => {
-    const { firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate } = req.body;
-    
+    const { firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate } = req.body;    
     try {
         const insertQuery = `
             INSERT INTO donor 
@@ -62,7 +61,6 @@ router.post('/', async (req, res) => {
 router.put('/:id', async(req,res)=> {
     const {id} = req.params
     const { firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate } = req.body;
-
     try {
         const updateQuery = `UPDATE DONOR
                                 SET 
