@@ -4,7 +4,6 @@ Aplikasi REST API yang dibentuk menggunakan Express.js, Node.js, and PostgreSQL 
 
 ## 📋 Table of Contents
 
-- [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -13,17 +12,7 @@ Aplikasi REST API yang dibentuk menggunakan Express.js, Node.js, and PostgreSQL 
 - [API Documentation](#api-documentation)
 - [Authentication](#authentication)
 - [Project Structure](#project-structure)
-- [Contributing](#contributing)
 - [License](#license)
-
-## ✨ Features
-
-- RESTful API endpoints
-- User authentication and authorization with JWT
-- PostgreSQL database integration
-- API documentation with Swagger
-- Secure password hashing with bcrypt
-- CORS support for cross-origin requests
 
 ## 🛠️ Tech Stack
 
