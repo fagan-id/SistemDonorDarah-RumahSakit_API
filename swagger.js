@@ -13,14 +13,8 @@ const options = {
         url: 'http://localhost:3000', // change this to your API base URL
       },
     ],
-    tags: [
-        { name: 'Blood Stock', description: 'Blood stock related endpoints' },
-        { name: 'Donor', description: 'Donor related endpoints' },
-        { name: 'Request', description: 'Blood request endpoints' },
-        { name: 'Auth', description: 'Authentication endpoints' }
-    ]
   },
-  apis: ['./routes/*.js'], // Path to your route files with Swagger comments
+  apis: ['./route/*.js'], // Path to your route files with Swagger comments
 };
 
 const specs = swaggerJsdoc(options);

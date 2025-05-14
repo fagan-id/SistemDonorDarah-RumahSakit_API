@@ -2,7 +2,58 @@ const express = require("express");
 const router = express.Router();
 const { conn } = require("../database");
 
-// get all blood-stocks (agregasi dari blood_type)
+/**
+ * @swagger
+ * /stock/total:
+ *   get:
+ *     summary: Get aggregate blood stock information
+ *     description: Retrieves aggregated blood stock information grouped by blood type and rhesus factor
+ *     tags:
+ *       - Blood Stocks
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved blood stocks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully get all blood stocks available!"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       bloodType:
+ *                         type: string
+ *                         enum: [O, A, B, AB]
+ *                         example: "A"
+ *                       rhesus:
+ *                         type: string
+ *                         enum: ["+", "-"]
+ *                         example: "+"
+ *                       quantity:
+ *                         type: integer
+ *                         example: 10
+ *                       total_volume:
+ *                         type: number
+ *                         format: float
+ *                         example: 4500
+ *       400:
+ *         description: Failed to get blood stocks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to get blood stocks data!"
+ *                 error:
+ *                   type: object
+ */
 router.get("/total", async (req, res) => {
   try {
     const getQuery = `SELECT 
@@ -29,7 +80,78 @@ router.get("/total", async (req, res) => {
   }
 });
 
-// get blood-stocks by type
+/**
+ * @swagger
+ * /stock/type:
+ *   get:
+ *     summary: Get blood stock information by type and rhesus
+ *     description: Retrieves aggregated blood stock information for a specific blood type and rhesus factor
+ *     tags:
+ *       - Blood Stocks
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - type
+ *               - rhesus
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [O, A, B, AB]
+ *                 description: Blood type
+ *                 example: "A"
+ *               rhesus:
+ *                 type: string
+ *                 enum: ["+", "-"]
+ *                 description: Rhesus factor
+ *                 example: "+"
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved blood stocks by type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully get all blood stocks available!"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       bloodType:
+ *                         type: string
+ *                         enum: [O, A, B, AB]
+ *                         example: "A"
+ *                       rhesus:
+ *                         type: string
+ *                         enum: ["+", "-"]
+ *                         example: "+"
+ *                       quantity:
+ *                         type: integer
+ *                         example: 5
+ *                       total_volume:
+ *                         type: number
+ *                         format: float
+ *                         example: 2250
+ *       400:
+ *         description: Failed to get blood stocks by type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to get blood stocks data!"
+ *                 error:
+ *                   type: string
+ */
 router.get("/type", async (req, res) => {
   const { type, rhesus } = req.body;
   try {
@@ -56,7 +178,42 @@ router.get("/type", async (req, res) => {
   }
 });
 
-// get all blood unit (single donor)
+/**
+ * @swagger
+ * /stock:
+ *   get:
+ *     summary: Get all blood units
+ *     description: Retrieves information for all blood units (single donor)
+ *     tags:
+ *       - Blood Units
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all blood units
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully Fetched all blood unit data!"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/BloodUnit'
+ *       400:
+ *         description: Failed to get blood units
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to get all blood unit data!"
+ *                 error:
+ *                   type: object
+ */
 router.get("/", async (req, res) => {
   try {
     const { rows } = await conn.query("SELECT * FROM BLOODUNIT");
@@ -72,7 +229,57 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get blood unit by id(single donor)
+/**
+ * @swagger
+ * /stock/{id}:
+ *   get:
+ *     summary: Get blood unit by ID
+ *     description: Retrieves a specific blood unit by its ID
+ *     tags:
+ *       - Blood Units
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Blood unit ID
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully Fetched a blood unit data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/BloodUnit'
+ *       404:
+ *         description: Blood unit not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Blood unit with ID 123 not found."
+ *       400:
+ *         description: Failed to get blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to get a blood unit data!"
+ *                 error:
+ *                   type: object
+ */
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -98,7 +305,83 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// post new blood unit (membuat blood unit baru)
+/**
+ * @swagger
+ * /stock:
+ *   post:
+ *     summary: Create a new blood unit
+ *     description: Adds a new blood unit to the database
+ *     tags:
+ *       - Blood Units
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_donor
+ *               - volume
+ *               - bloodtype
+ *               - rhesus
+ *               - status
+ *               - expirydate
+ *             properties:
+ *               id_donor:
+ *                 type: integer
+ *                 description: Donor ID (foreign key to donor table)
+ *                 example: 1
+ *               volume:
+ *                 type: number
+ *                 format: float
+ *                 description: Blood volume in ml
+ *                 example: 450
+ *               bloodtype:
+ *                 type: string
+ *                 enum: [O, A, B, AB]
+ *                 description: Blood type
+ *                 example: "A"
+ *               rhesus:
+ *                 type: string
+ *                 enum: ["+", "-"]
+ *                 description: Rhesus factor
+ *                 example: "+"
+ *               status:
+ *                 type: integer
+ *                 enum: [1, 2]
+ *                 description: Status (1=in-stock, 2=out)
+ *                 example: 1
+ *               expirydate:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Expiration date of the blood unit
+ *                 example: "2025-05-15T00:00:00Z"
+ *     responses:
+ *       201:
+ *         description: Successfully created blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully created a new blood data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/BloodUnit'
+ *       400:
+ *         description: Failed to create blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to create new blood data!"
+ *                 error:
+ *                   type: string
+ */
 router.post("/", async (req, res) => {
   const { id_donor, volume, bloodtype, rhesus, status, expirydate } = req.body;
   const donordate = new Date().toISOString();
@@ -133,7 +416,100 @@ router.post("/", async (req, res) => {
   }
 });
 
-// update blood unit
+/**
+ * @swagger
+ * /stock/{id}:
+ *   put:
+ *     summary: Update blood unit
+ *     description: Updates an existing blood unit by ID
+ *     tags:
+ *       - Blood Units
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Blood unit ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_donor
+ *               - volume
+ *               - bloodtype
+ *               - rhesus
+ *               - status
+ *               - expirydate
+ *             properties:
+ *               id_donor:
+ *                 type: integer
+ *                 description: Donor ID (foreign key to donor table)
+ *                 example: 1
+ *               volume:
+ *                 type: number
+ *                 format: float
+ *                 description: Blood volume in ml
+ *                 example: 450
+ *               bloodtype:
+ *                 type: string
+ *                 enum: [O, A, B, AB]
+ *                 description: Blood type
+ *                 example: "A"
+ *               rhesus:
+ *                 type: string
+ *                 enum: ["+", "-"]
+ *                 description: Rhesus factor
+ *                 example: "+"
+ *               status:
+ *                 type: integer
+ *                 enum: [1, 2]
+ *                 description: Status (1=in-stock, 2=out)
+ *                 example: 1
+ *               expirydate:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Expiration date of the blood unit
+ *                 example: "2025-05-15T00:00:00Z"
+ *     responses:
+ *       200:
+ *         description: Successfully updated blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully updated a blood data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/BloodUnit'
+ *       404:
+ *         description: Blood unit not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Blood unit with ID 123 not found."
+ *       400:
+ *         description: Failed to update blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to update blood data!"
+ *                 error:
+ *                   type: string
+ */
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { id_donor, volume, bloodtype, rhesus, status, expirydate } = req.body;
@@ -180,7 +556,57 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// delete blood unit
+/**
+ * @swagger
+ * /stock/{id}:
+ *   delete:
+ *     summary: Delete blood unit
+ *     description: Deletes a blood unit by ID
+ *     tags:
+ *       - Blood Units
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Blood unit ID to delete
+ *     responses:
+ *       200:
+ *         description: Successfully deleted blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully deleted a blood data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/BloodUnit'
+ *       404:
+ *         description: Blood unit not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Blood unit with ID 123 not found."
+ *       400:
+ *         description: Failed to delete blood unit
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to delete a blood data!"
+ *                 error:
+ *                   type: string
+ */
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -205,5 +631,52 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     BloodUnit:
+ *       type: object
+ *       properties:
+ *         id_unit:
+ *           type: integer
+ *           description: The unique identifier for the blood unit
+ *           example: 1
+ *         id_donor:
+ *           type: integer
+ *           description: The donor's identifier (foreign key)
+ *           example: 1
+ *         volume:
+ *           type: number
+ *           format: float
+ *           description: Volume of blood in ml
+ *           example: 450
+ *         bloodType:
+ *           type: string
+ *           enum: [O, A, B, AB]
+ *           description: Blood type
+ *           example: "A"
+ *         rhesus:
+ *           type: string
+ *           enum: ["+", "-"]
+ *           description: Rhesus factor
+ *           example: "+"
+ *         status:
+ *           type: integer
+ *           enum: [1, 2]
+ *           description: Status (1=in-stock, 2=out)
+ *           example: 1
+ *         donorDate:
+ *           type: string
+ *           format: date-time
+ *           description: Date when blood was donated
+ *           example: "2025-05-10T10:00:00Z"
+ *         expiryDate:
+ *           type: string
+ *           format: date-time
+ *           description: Expiration date of the blood unit
+ *           example: "2025-06-10T10:00:00Z"
+ */
 
 module.exports = router;

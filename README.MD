@@ -1,24 +1,140 @@
-    ##PreRequisites : 
-    Tech Stack : Express.Js, Node.Js, PostgresSQL, JWT
+# Sistem Informasi Rumah Sakit X Sistem Donor Darah
 
+Aplikasi REST API yang dibentuk menggunakan Express.js, Node.js, and PostgreSQL untuk memfasilitasi interoperabilitas antara Sistem Informasi Rumah Sakit dan Sistem Donor Darah.
 
-    ##Installation : 
-    ###1 Install node modules
-    <npm install>
+## 📋 Table of Contents
 
-    ###2 Library Install
-    <npm install dotenv
-    npm install --save-dev nodemon
-    npm install cors>
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the App](#running-the-app)
+- [API Documentation](#api-documentation)
+- [Authentication](#authentication)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
+## ✨ Features
 
-    ###3 PostgresSQL Installation
-    npm install pg 
+- RESTful API endpoints
+- User authentication and authorization with JWT
+- PostgreSQL database integration
+- API documentation with Swagger
+- Secure password hashing with bcrypt
+- CORS support for cross-origin requests
 
-    ###4 authentication
-    npm install jsonwebtoken
-    npm install bcrypt
+## 🛠️ Tech Stack
 
+- **Backend**: Node.js, Express.js
+- **Database**: PostgreSQL
+- **Authentication**: JSON Web Tokens (JWT), bcrypt
+- **Documentation**: Swagger UI
+- **Development**: Nodemon (hot reloading)
 
-    ###5 docs
-    npm install swagger-ui-express swagger-jsdoc
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (v14.x or higher)
+- [npm](https://www.npmjs.com/) (v6.x or higher)
+- [PostgreSQL](https://www.postgresql.org/) (v12.x or higher)
+
+## 🚀 Installation
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/yourusername/your-app-name.git
+cd your-app-name
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Install additional libraries**
+
+```bash
+# Development dependencies
+npm install --save-dev nodemon
+
+# Runtime dependencies
+npm install dotenv cors pg jsonwebtoken bcrypt swagger-ui-express swagger-jsdoc
+```
+
+## ⚙️ Configuration
+
+1. **Create a `.env` file in the project root with the following variables:**
+
+```env
+# Server
+PORT=3000
+NODE_ENV=development
+
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=yourpassword
+DB_NAME=yourdatabase
+
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=24h
+```
+
+## 🏃‍♂️ Running the App
+
+### Development mode
+
+```bash
+# Using nodemon for hot reloading
+npm run dev
+```
+
+### Production mode
+
+```bash
+npm start
+```
+
+## 📚 API Documentation
+
+Once the server is running, access the Swagger documentation at:
+
+```
+http://localhost:3000/api-docs
+```
+
+## 🔐 Authentication
+
+This application uses JWT (JSON Web Tokens) for authentication:
+
+1. Register a new user through the `/auth/register` endpoint
+2. Login with credentials at `/auth/login` to receive a JWT token
+3. Include the token in the Authorization header for protected routes:
+   
+```
+Authorization: Bearer your_jwt_token
+```
+
+## 📁 Project Structure
+
+```
+.
+├── components/         # Token Handle etc
+├── routes/             # API routes
+├── .env                # Environment variables
+├── .gitignore          # Git ignore file
+├── app.js              # Application entry point
+├── database.js         # Database setup
+├── database.sql        # Database sql files for import
+├── swagger.js          # Swagger Docs setup
+├── package.json        # Project metadata and dependencies
+├── package-lock.json   # Project dependencies
+└── README.md           # Project documentation
+```

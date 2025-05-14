@@ -2,7 +2,52 @@ const express = require("express");
 const router = express.Router();
 const { conn } = require("../database");
 
-// get all request
+/**
+ * @swagger
+ * /requests:
+ *   get:
+ *     summary: Get all blood requests
+ *     description: Retrieves all blood request records from the database
+ *     tags:
+ *       - Requests
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully Fetch Request Data!"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Request'
+ *       404:
+ *         description: No request data found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No request data found."
+ *       400:
+ *         description: Failed to retrieve request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to fetch request Data!"
+ *                 data:
+ *                   type: object
+ */
 router.get("/", async (req, res) => {
   try {
     const { rows } = await conn.query(`SELECT * FROM REQUEST`);
@@ -23,7 +68,57 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get request by id
+/**
+ * @swagger
+ * /requests/{id}:
+ *   get:
+ *     summary: Get request by ID
+ *     description: Retrieves a specific blood request by its ID
+ *     tags:
+ *       - Requests
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Request ID
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully Fetch Request Data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/Request'
+ *       404:
+ *         description: Request not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Request data with ID 123 not found."
+ *       400:
+ *         description: Failed to retrieve request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to fetch request Data!"
+ *                 data:
+ *                   type: object
+ */
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -48,7 +143,87 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// post new request
+/**
+ * @swagger
+ * /requests:
+ *   post:
+ *     summary: Create a new blood request
+ *     description: Creates a new blood request record in the database
+ *     tags:
+ *       - Requests
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_hospital
+ *               - id_patient
+ *               - bloodtype
+ *               - rhesus
+ *               - quantity
+ *               - urgency
+ *               - status
+ *             properties:
+ *               id_hospital:
+ *                 type: integer
+ *                 description: Hospital ID (foreign key to hospital table)
+ *                 example: 1
+ *               id_patient:
+ *                 type: integer
+ *                 description: Patient ID (foreign key to patient table)
+ *                 example: 1
+ *               bloodtype:
+ *                 type: string
+ *                 enum: [O, A, B, AB]
+ *                 description: Blood type requested
+ *                 example: "A"
+ *               rhesus:
+ *                 type: string
+ *                 enum: ["+", "-"]
+ *                 description: Rhesus factor requested
+ *                 example: "+"
+ *               quantity:
+ *                 type: integer
+ *                 description: Number of blood units requested
+ *                 example: 2
+ *               urgency:
+ *                 type: integer
+ *                 enum: [1, 2, 3]
+ *                 description: Urgency level (1=low, 2=normal, 3=high)
+ *                 example: 2
+ *               status:
+ *                 type: integer
+ *                 enum: [0, 1, 2]
+ *                 description: Request status (0=waiting, 1=approved, 2=rejected)
+ *                 example: 0
+ *     responses:
+ *       201:
+ *         description: Successfully created request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully Created a Request Data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/Request'
+ *       400:
+ *         description: Failed to create request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to fetch request Data!"
+ *                 data:
+ *                   type: object
+ */
 router.post("/", async (req, res) => {
   const {
     id_hospital,
@@ -87,7 +262,104 @@ router.post("/", async (req, res) => {
   }
 });
 
-//update request
+/**
+ * @swagger
+ * /requests/{id}:
+ *   put:
+ *     summary: Update blood request
+ *     description: Updates an existing blood request by ID
+ *     tags:
+ *       - Requests
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Request ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_hospital
+ *               - id_patient
+ *               - bloodtype
+ *               - rhesus
+ *               - quantity
+ *               - urgency
+ *               - status
+ *             properties:
+ *               id_hospital:
+ *                 type: integer
+ *                 description: Hospital ID (foreign key to hospital table)
+ *                 example: 1
+ *               id_patient:
+ *                 type: integer
+ *                 description: Patient ID (foreign key to patient table)
+ *                 example: 1
+ *               bloodtype:
+ *                 type: string
+ *                 enum: [O, A, B, AB]
+ *                 description: Blood type requested
+ *                 example: "A"
+ *               rhesus:
+ *                 type: string
+ *                 enum: ["+", "-"]
+ *                 description: Rhesus factor requested
+ *                 example: "+"
+ *               quantity:
+ *                 type: integer
+ *                 description: Number of blood units requested
+ *                 example: 2
+ *               urgency:
+ *                 type: integer
+ *                 enum: [1, 2, 3]
+ *                 description: Urgency level (1=low, 2=normal, 3=high)
+ *                 example: 2
+ *               status:
+ *                 type: integer
+ *                 enum: [0, 1, 2]
+ *                 description: Request status (0=waiting, 1=approved, 2=rejected)
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Successfully updated request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully updated a Request Data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/Request'
+ *       404:
+ *         description: Request not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Request data with ID 123 not found."
+ *       400:
+ *         description: Failed to update request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to update a request Data!"
+ *                 data:
+ *                   type: object
+ */
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const {
@@ -144,7 +416,57 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// delete request
+/**
+ * @swagger
+ * /requests/{id}:
+ *   delete:
+ *     summary: Delete blood request
+ *     description: Deletes a blood request by ID
+ *     tags:
+ *       - Requests
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Request ID to delete
+ *     responses:
+ *       200:
+ *         description: Successfully deleted request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Succesfully deleted Request Data!"
+ *                 data:
+ *                   $ref: '#/components/schemas/Request'
+ *       404:
+ *         description: Request not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Request data with ID 123 not found."
+ *       400:
+ *         description: Failed to delete request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to delete request Data!"
+ *                 data:
+ *                   type: object
+ */
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -169,5 +491,55 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Request:
+ *       type: object
+ *       properties:
+ *         id_request:
+ *           type: integer
+ *           description: The unique identifier for the blood request
+ *           example: 1
+ *         id_hospital:
+ *           type: integer
+ *           description: The hospital's identifier (foreign key)
+ *           example: 1
+ *         id_patient:
+ *           type: integer
+ *           description: The patient's identifier (foreign key)
+ *           example: 1
+ *         bloodType:
+ *           type: string
+ *           enum: [O, A, B, AB]
+ *           description: Blood type requested
+ *           example: "A"
+ *         rhesus:
+ *           type: string
+ *           enum: ["+", "-"]
+ *           description: Rhesus factor requested
+ *           example: "+"
+ *         quantity:
+ *           type: integer
+ *           description: Number of blood units requested
+ *           example: 2
+ *         urgency:
+ *           type: integer
+ *           enum: [1, 2, 3]
+ *           description: Urgency level (1=low, 2=normal, 3=high)
+ *           example: 2
+ *         status:
+ *           type: integer
+ *           enum: [0, 1, 2]
+ *           description: Request status (0=waiting, 1=approved, 2=rejected)
+ *           example: 0
+ *         requestedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date and time when the request was created
+ *           example: "2025-05-14T10:00:00Z"
+ */
 
 module.exports = router;
