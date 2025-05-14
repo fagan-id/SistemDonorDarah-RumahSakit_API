@@ -13,3 +13,5 @@ const conn = new Client({
 module.exports = { conn };
 
 // OTW GANTI CLIENT -> POOL / Maybe in the future 
+
+//TBA SUPABASE

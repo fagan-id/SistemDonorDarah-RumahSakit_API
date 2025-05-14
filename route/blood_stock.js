@@ -29,7 +29,7 @@ router.get("/total", async (req, res) => {
   }
 });
 
-// get blood-stocks by id/type
+// get blood-stocks by type
 router.get("/type", async (req, res) => {
   const { type, rhesus } = req.body;
   try {
@@ -80,6 +80,12 @@ router.get("/:id", async (req, res) => {
       "SELECT * FROM BLOODUNIT WHERE id_unit = $1",
       [id]
     );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: `Blood unit with ID ${id} not found.`,
+      });
+    }
     res.status(200).json({
       message: "Succesfully Fetched a blood unit data!",
       data: rows[0],
@@ -108,6 +114,12 @@ router.post("/", async (req, res) => {
       donordate,
       expirydate,
     ]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: `Blood unit with ID ${id} not found.`,
+      });
+    }
 
     res.status(201).json({
       message: "Succesfully created a new blood data!",
@@ -150,6 +162,12 @@ router.put("/:id", async (req, res) => {
       id,
     ]);
 
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: `Blood unit with ID ${id} not found.`,
+      });
+    }
+
     res.status(200).json({
       message: "Succesfully updated a blood data!",
       data: rows[0],
@@ -168,9 +186,14 @@ router.delete("/:id", async (req, res) => {
 
   try {
     const { rows } = await conn.query(
-      `DELETE FROM BLOODUNIT WHERE id_unit = $1`,
+      `DELETE FROM BLOODUNIT WHERE id_unit = $1 RETURNING *`,
       [id]
     );
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: `Blood unit with ID ${id} not found.`,
+      });
+    }
     res.status(200).json({
       message: "Succesfully deleted a blood data!",
       data: rows[0],

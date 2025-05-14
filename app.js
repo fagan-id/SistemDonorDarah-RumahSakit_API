@@ -3,6 +3,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const {conn} = require('./database');
+const specs = require('./swagger');
+const swaggerUI = require('swagger-ui-express');
+
 
 // Initialize the app
 const app = express();
@@ -28,6 +31,7 @@ app.use("/api/donor",donorRouter);
 app.use("/api/stock",bloodRouter);
 app.use('/api/request',requestRouter);
 app.use('/api/auth',authRouter);
+app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(specs))
 
 
 // Basic route

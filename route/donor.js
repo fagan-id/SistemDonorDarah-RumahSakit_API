@@ -6,7 +6,15 @@ const {conn} = require('../database');
 router.get('/', async(req,res) => {
     try {
         const {rows} = await conn.query('SELECT * FROM DONOR');
-        res.status(200).json({data : rows})
+        if (rows.length === 0) {
+            return res.status(404).json({
+              message: `Donor data not found.`,
+            });
+          }
+        res.status(200).json({
+            message : "Succesfully Fetched All Donor Data!",
+            data : rows
+        })
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
@@ -17,7 +25,17 @@ router.get('/:id', async(req,res) => {
     try {
         const {id} = req.params;
         const {rows} = await conn.query(`SELECT * FROM DONOR where id_donor = $1`,[id]);
-        res.status(200).json({data : rows[0]})
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+              message: `Donor data with ${id} not found.`,
+            });
+          }
+
+        res.status(200).json({
+            message : "Successfuly Fetch Donor ID",
+            data : rows[0]
+        })
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
@@ -77,6 +95,12 @@ router.put('/:id', async(req,res)=> {
                             `
         const {rows} = await conn.query(updateQuery, [firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate, id]);
 
+        if (rows.length === 0) {
+            return res.status(404).json({
+              message: `Donor data with ${id} not found.`,
+            });
+          }
+
         res.status(200).json({
             message : "Successfully Updated donor!",
             data:rows[0]
@@ -95,6 +119,12 @@ router.delete('/:id', async(req,res) => {
     try {
         const {id} = req.params
         const {rows} = await conn.query('DELETE FROM DONOR where id_donor = $1',[id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+              message: `Donor data with ${id} not found.`,
+            });
+          }
     
         res.status(200).json({
             message : "Succesfully Deleted donor!",
