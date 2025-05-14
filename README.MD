@@ -4,16 +4,22 @@ Aplikasi REST API yang dibentuk menggunakan Express.js, Node.js, and PostgreSQL 
 
 ## 📋 Table of Contents
 
+- [API Documentation](#api-documentation)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Running the App](#running-the-app)
-- [API Documentation](#api-documentation)
-- [Authentication](#authentication)
 - [Project Structure](#project-structure)
 - [License](#license)
 
+## 📚 API Documentation
+
+Once the server is running, access the Swagger documentation at:
+
+```
+http://localhost:3000/api-docs
+```
 ## 🛠️ Tech Stack
 
 - **Backend**: Node.js, Express.js
@@ -90,27 +96,6 @@ npm run dev
 ```bash
 npm start
 ```
-
-## 📚 API Documentation
-
-Once the server is running, access the Swagger documentation at:
-
-```
-http://localhost:3000/api-docs
-```
-
-## 🔐 Authentication
-
-This application uses JWT (JSON Web Tokens) for authentication:
-
-1. Register a new user through the `/auth/register` endpoint
-2. Login with credentials at `/auth/login` to receive a JWT token
-3. Include the token in the Authorization header for protected routes:
-   
-```
-Authorization: Bearer your_jwt_token
-```
-
 ## 📁 Project Structure
 
 ```
