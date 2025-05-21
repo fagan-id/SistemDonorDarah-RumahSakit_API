@@ -2,7 +2,7 @@
 -- Table structure for table `user`
 -- --------------------------------------------------------
 
-CREATE TABLE "user" (
+CREATE TABLE "users" (
   id_user SERIAL PRIMARY KEY,
   username VARCHAR(200) NOT NULL,
   email VARCHAR(200) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE "user" (
 );
 
 -- Dumping data for table `user`
-INSERT INTO "user" (username, email, password, roles) 
+INSERT INTO "users" (username, email, password, roles) 
 VALUES
 ('admin bloodbank', 'adminbloodbank@admin.com', 'admin123', 1),
 ('admin rumah sakit', 'adminhospital@admin.com', 'admin123', 2);
@@ -24,7 +24,7 @@ CREATE TABLE admin (
     id_admin SERIAL PRIMARY KEY,
     id_user INTEGER NOT NULL UNIQUE,
     accessedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user) REFERENCES "user"(id_user) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_user) REFERENCES "users"(id_user) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Dumping data for table `admin`
@@ -45,19 +45,20 @@ CREATE TABLE donor (
   city VARCHAR(200) NOT NULL,
   province VARCHAR(100) NOT NULL,
   bloodType VARCHAR(2) NOT NULL CHECK (bloodType IN ('O', 'A', 'B', 'AB')),
+  rhesus VARCHAR(1) NOT NULL CHECK (rhesus IN ('+', '-')),
   phoneNumber VARCHAR(50) NOT NULL,
   lastDonorDate DATE NOT NULL
 );
 
 -- Dumping data for table `donor`
 INSERT INTO donor 
-(firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate)
+(firstName, lastName, email, city, province, bloodType, rhesus,phoneNumber, lastDonorDate)
 VALUES
-('John', 'Doe', 'johndoe@example.com', 'Jakarta', 'DKI Jakarta', 'A', '081234567890', '2023-12-01'),
-('Jane', 'Smith', 'janesmith@example.com', 'Bandung', 'Jawa Barat', 'B', '082345678901', '2023-11-15'),
-('Mark', 'Johnson', 'markjohnson@example.com', 'Surabaya', 'Jawa Timur', 'O', '083456789012', '2023-10-10'),
-('Alice', 'Brown', 'alicebrown@example.com', 'Yogyakarta', 'DI Yogyakarta', 'AB', '084567890123', '2023-09-05'),
-('Robert', 'Davis', 'robertdavis@example.com', 'Medan', 'Sumatera Utara', 'O', '085678901234', '2023-08-20');
+('John', 'Doe', 'johndoe@example.com', 'Jakarta', 'DKI Jakarta', 'A','-','081234567890', '2023-12-01'),
+('Jane', 'Smith', 'janesmith@example.com', 'Bandung', 'Jawa Barat', 'B','+','082345678901', '2023-11-15'),
+('Mark', 'Johnson', 'markjohnson@example.com', 'Surabaya', 'Jawa Timur', 'O','+', '083456789012', '2023-10-10'),
+('Alice', 'Brown', 'alicebrown@example.com', 'Yogyakarta', 'DI Yogyakarta', 'AB','-', '084567890123', '2023-09-05'),
+('Robert', 'Davis', 'robertdavis@example.com', 'Medan', 'Sumatera Utara', 'O','+', '085678901234', '2023-08-20');
 
 -- --------------------------------------------------------
 -- Table structure for table `bloodUnit`
@@ -182,46 +183,43 @@ VALUES
 
 CREATE TABLE request (
   id_request SERIAL PRIMARY KEY,
-  id_hospital INTEGER NOT NULL,
   id_patient INTEGER NOT NULL,
+  id_doctor INTEGER NOT NULL,
   bloodType VARCHAR(2) NOT NULL CHECK (bloodType IN ('O', 'A', 'B', 'AB')),
   rhesus VARCHAR(1) NOT NULL CHECK (rhesus IN ('+', '-')),
   quantity INTEGER NOT NULL,
   urgency SMALLINT NOT NULL DEFAULT 0 CHECK (urgency IN (1, 2, 3)), -- 1=low,2=normal,3=high
   status SMALLINT NOT NULL DEFAULT 0 CHECK (status IN (0, 1, 2)), -- 0=waiting,1=approved,2=rejected
   requestedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_hospital) REFERENCES hospital(id_hospital) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_patient) REFERENCES patient(id_patient) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (id_patient) REFERENCES patient(id_patient) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_doctor) REFERENCES doctor(id_doctor) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+
 -- Dumping data for table `request`
-INSERT INTO request (id_hospital, id_patient, bloodType, rhesus, quantity, urgency, status)
+INSERT INTO request (id_patient, id_doctor, bloodType, rhesus, quantity, urgency, status)
 VALUES
 (1, 1, 'A', '+', 2, 3, 0), -- High urgency, waiting
-(2, 3, 'B', '-', 1, 2, 1), -- Normal urgency, approved
-(1, 4, 'O', '+', 3, 1, 2), -- Low urgency, rejected
-(3, 2, 'AB', '-', 2, 3, 0), -- High urgency, waiting
-(2, 5, 'A', '-', 4, 2, 1); -- Normal urgency, approved
+(2, 3,'B', '-', 1, 2, 1), -- Normal urgency, approved
+(3, 4,'O', '+', 3, 1, 2), -- Low urgency, rejected
+(4, 2,'AB', '-', 2, 3, 0), -- High urgency, waiting
+(5, 5,'A', '-', 4, 2, 1); -- Normal urgency, approved
 
 -- --------------------------------------------------------
 -- Table structure for table `confirmed`
 -- --------------------------------------------------------
 
 CREATE TABLE confirmed (
-  id_konfirmasi SERIAL PRIMARY KEY,
-  id_request INTEGER NOT NULL,
-  id_unit INTEGER NOT NULL,
-  status SMALLINT NOT NULL DEFAULT 0 CHECK (status IN (1, 2)), -- 1=diterima,2=belum diterima
-  UNIQUE (id_request, id_unit),
-  FOREIGN KEY (id_request) REFERENCES request(id_request) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_unit) REFERENCES bloodUnit(id_unit) ON DELETE CASCADE ON UPDATE CASCADE
+  id_confirmed SERIAL PRIMARY KEY,
+  id_patient INTEGER NOT NULL,
+  id_doctor INTEGER NOT NULL,
+  bloodType VARCHAR(2) NOT NULL CHECK (bloodType IN ('O', 'A', 'B', 'AB')),
+  rhesus VARCHAR(1) NOT NULL CHECK (rhesus IN ('+', '-')),
+  quantity INTEGER NOT NULL,
+  urgency SMALLINT NOT NULL DEFAULT 0 CHECK (urgency IN (1, 2, 3)), -- 1=low,2=normal,3=high
+  status SMALLINT NOT NULL DEFAULT 0 CHECK (status IN (0, 1, 2)), -- 0=waiting,1=approved,2=rejected
+  requestedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_patient) REFERENCES patient(id_patient) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_doctor) REFERENCES doctor(id_doctor) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Dumping data for table `confirmed`
-INSERT INTO confirmed (id_request, id_unit, status)
-VALUES
-(1, 1, 1),  -- request 1 dikonfirmasi menggunakan unit darah 1
-(1, 2, 1),  -- request 1 juga pakai unit darah 2
-(2, 3, 2),  -- request 2 masih menunggu konfirmasi untuk unit darah 3
-(3, 4, 2),  -- request 3 belum diterima unit darah 4
-(4, 5, 1);  -- request 4 dikonfirmasi dengan unit darah 5

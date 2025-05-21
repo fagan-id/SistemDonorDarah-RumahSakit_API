@@ -134,17 +134,17 @@ router.get('/:id', async(req,res) => {
  *         description: Server error
  */
 router.post('/', async (req, res) => {
-    const { firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate } = req.body;    
+    const { firstName, lastName, email, city, province, bloodType, rhesus,phoneNumber, lastDonorDate } = req.body;    
     try {
         const insertQuery = `
             INSERT INTO donor 
-            (firstname, lastname, email, city, province, bloodtype, phonenumber, lastdonordate) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            (firstname, lastname, email, city, province, bloodtype, rhesus,phonenumber, lastdonordate) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *
         `;
         
         const { rows } = await conn.query(insertQuery, [
-            firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate
+            firstName, lastName, email, city, province, bloodType, rhesus,phoneNumber, lastDonorDate
         ]);
         
         res.status(201).json({
@@ -202,22 +202,23 @@ router.post('/', async (req, res) => {
  */
 router.put('/:id', async(req,res)=> {
     const {id} = req.params
-    const { firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate } = req.body;
+    const { firstName, lastName, email, city, province, bloodType, rhesus,phoneNumber, lastDonorDate } = req.body;
     try {
         const updateQuery = `UPDATE DONOR
-                                SET 
+                            SET 
                             firstname = $1,
                             lastname = $2,
                             email = $3,
                             city = $4,
                             province = $5,
                             bloodType = $6,
-                            phoneNumber = $7,
-                            lastdonordate = $8
-                            WHERE id_donor = $9
+                            rhesus = $7,
+                            phoneNumber = $8,
+                            lastdonordate = $9
+                            WHERE id_donor = $10
                             RETURNING *
                             `
-        const {rows} = await conn.query(updateQuery, [firstName, lastName, email, city, province, bloodType, phoneNumber, lastDonorDate, id]);
+        const {rows} = await conn.query(updateQuery, [firstName, lastName, email, city, province, bloodType, rhesus,phoneNumber, lastDonorDate, id]);
 
         if (rows.length === 0) {
             return res.status(404).json({
@@ -274,7 +275,7 @@ router.put('/:id', async(req,res)=> {
 router.delete('/:id', async(req,res) => {
     try {
         const {id} = req.params
-        const {rows} = await conn.query('DELETE FROM DONOR where id_donor = $1',[id]);
+        const {rows} = await conn.query('DELETE FROM DONOR where id_donor = $1 RETURNING *',[id]);
 
         if (rows.length === 0) {
             return res.status(404).json({
@@ -324,6 +325,10 @@ router.delete('/:id', async(req,res) => {
  *           type: string
  *           enum: [O, A, B, AB]
  *           example: A
+ *         rhesus: 
+ *           type: string
+ *           enum: ['+', '-']
+ *           example: '-'
  *         phoneNumber:
  *           type: string
  *           example: "+1234567890"
@@ -340,6 +345,7 @@ router.delete('/:id', async(req,res) => {
  *         - city
  *         - province
  *         - bloodType
+ *         - rhesus
  *         - phoneNumber
  *         - lastDonorDate
  *       properties:
@@ -362,6 +368,10 @@ router.delete('/:id', async(req,res) => {
  *           type: string
  *           enum: [O, A, B, AB]
  *           example: A
+ *         rhesus: 
+ *           type: string
+ *           enum: ['+', '-']
+ *           example: '+'
  *         phoneNumber:
  *           type: string
  *           example: "+1234567890"
@@ -370,5 +380,6 @@ router.delete('/:id', async(req,res) => {
  *           format: date
  *           example: "2023-05-15"
  */
+
 
 module.exports = router;
