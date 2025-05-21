@@ -34,7 +34,7 @@ app.use("/api/stock",bloodRouter);
 app.use('/api/request',requestRouter);
 app.use('/api/auth',authRouter);
 app.use('/api/confirmed',confirmedRouter);
-app.use('/api/users',userRouter);
+app.use('/api/user',userRouter);
 app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(specs))
 
 
