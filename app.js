@@ -28,6 +28,8 @@ const requestRouter = require('./route/request');
 const authRouter = require('./route/auth');
 const confirmedRouter = require('./route/confirmed');
 const userRouter = require('./route/user');
+const patientRouter = require('./route/patient')
+const doctorRouter = require('./route/doctor');
 
 app.use("/api/donor",donorRouter);
 app.use("/api/stock",bloodRouter);
@@ -35,8 +37,9 @@ app.use('/api/request',requestRouter);
 app.use('/api/auth',authRouter);
 app.use('/api/confirmed',confirmedRouter);
 app.use('/api/user',userRouter);
-app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(specs))
-
+app.use('/api/patient',patientRouter);
+app.use('/api/doctor',doctorRouter);
+app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(specs));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -48,5 +51,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`API available at http://localhost:${PORT}/api`);
-    console.log(`Access Docs Via : https://localhost:${PORT}/api-docs`)
+    console.log(`Access Docs Via : http://localhost:${PORT}/api-docs`)
   });
