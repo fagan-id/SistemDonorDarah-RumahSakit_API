@@ -79,8 +79,10 @@ router.get("/", async (req, res) => {
     const { rows } = await conn.query(`
                                      SELECT
                                       request.id_request,
+                                      request.id_patient,
                                       patient.firstname || ' ' || patient.lastname AS patient_name,
                                       doctor.doctorname,
+                                      request.id_doctor,
                                       hospital.hospitalname AS hospital_name,
                                       request.bloodtype,
                                       request.rhesus,

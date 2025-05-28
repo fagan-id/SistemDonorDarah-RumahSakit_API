@@ -189,7 +189,7 @@ CREATE TABLE request (
   rhesus VARCHAR(1) NOT NULL CHECK (rhesus IN ('+', '-')),
   quantity INTEGER NOT NULL,
   urgency SMALLINT NOT NULL DEFAULT 0 CHECK (urgency IN (1, 2, 3)), -- 1=low,2=normal,3=high
-  status SMALLINT NOT NULL DEFAULT 0 CHECK (status IN (0, 1, 2)), -- 0=waiting,1=approved,2=rejected
+  status SMALLINT NOT NULL DEFAULT 0 CHECK (status IN (0, 1, 2,3)), -- 0=waiting,1=approved,2=rejected
   requestedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_patient) REFERENCES patient(id_patient) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (id_doctor) REFERENCES doctor(id_doctor) ON DELETE CASCADE ON UPDATE CASCADE
