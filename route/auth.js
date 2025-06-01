@@ -73,7 +73,7 @@ router.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const { rows } = await conn.query(
-      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, email",
+      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id_user, email",
       [username, email, hashedPassword]
     );
 
@@ -84,6 +84,7 @@ router.post("/register", async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Internal server error",
+      error: err.message,
     });
   }
 });
@@ -140,6 +141,8 @@ router.post("/login", async (req, res) => {
     if (!rows)
       return res.status(400).json({ message: "Invalid email or password" });
 
+    const user = rows[0];
+
     // Compare password
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid)
@@ -164,6 +167,7 @@ router.post("/login", async (req, res) => {
     console.error("Login Error:", err);
     res.status(500).json({
       message: "Internal server error",
+      error: err.message,
     });
   }
 });
